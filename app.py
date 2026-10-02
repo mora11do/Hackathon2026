@@ -15,9 +15,9 @@ def upload_resume():
     resume.save("resume.pdf")
 
     # Your team's existing processing
-    applicant = extract_resume("resume.pdf")
+    applicant = extract_text("resume.pdf")
 
-    jobs = scrape_jobs(
+    jobs = enrich(
         keywords=applicant["skills"],
         location=applicant["location"]
     )
