@@ -13,7 +13,7 @@ resumeUpload.addEventListener("change", async function () {
     formData.append("resume", file);
 
     try {
-        const response = await fetch("https://vigilant-space-happiness-wrvqgr9xjvpp2pgq-5001.app.github.dev/", {
+        const response = await fetch("https://vigilant-space-happiness-wrvqgr9xjvpp2pgq-5001.app.github.dev/upload", {
             method: "POST",
             body: formData
         });
