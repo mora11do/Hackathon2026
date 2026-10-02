@@ -13,7 +13,7 @@ Every request (APIs and HTML pages alike) goes through PoliteFetcher, which:
   * fetches and caches robots.txt per host and refuses disallowed URLs
   * honours Crawl-delay and enforces a minimum delay per host
   * backs off on 429/503 (honouring Retry-After)
-  * identifies itself with a real User-Agent (edit USER_AGENT below!)
+  * identifies itself with a real User-Agent 
 """
 from __future__ import annotations
 
