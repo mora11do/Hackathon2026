@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
-from extract_resume import extract_resume
-from Webscraper import scrape_jobs
+from extract_resume import extract_text
+from Webscraper import enrich
 from geocode import add_coordinates
 
 app = Flask(__name__)
