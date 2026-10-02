@@ -1,10 +1,10 @@
-from extract_resume import extract_resume
+from extract_resume import extract_text
 from Webscraper import scrape_jobs
 from geocode import add_coordinates
 
 
 def main():
-    applicant = extract_resume("resume.pdf")
+    applicant = extract_text("resume.pdf")
 
     jobs = scrape_jobs(
         keywords=applicant["skills"],
