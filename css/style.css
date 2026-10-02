@@ -178,12 +178,11 @@ a.service.selected {
     .footer {
         text-align: center;
         padding-bottom: 2%;
-        background-color: rgb(236, 205, 225);
+        background-color: Navy;
         font-size: medium;
         font-style: italic;
         font-family: Arial, Helvetica, sans-serif;
         color: black;
-        border: dashed rgb(239, 119, 197);
         position: fixed;
         width: 98.68%;
         bottom: 0px;
