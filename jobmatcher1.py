@@ -281,6 +281,8 @@ def main() -> int:
     ap.add_argument("--out", help="optionally save scored results to this CSV")
     ap.add_argument("--txt", default="results.txt",
                     help="save every scored job to this easy-to-read text file (default: results.txt)")
+    ap.add_argument("--json", default="matched-jobs.json",
+                    help="save results for matched-jobs.html (default: matched-jobs.json)")
     args = ap.parse_args()
 
     # --- profile from the form ---
@@ -294,6 +296,7 @@ def main() -> int:
     jobs = load_jobs(args.csv)
     if not jobs:
         sys.exit("The CSV has no jobs in it.")
+    total_jobs, home, hidden_far, hidden_dream = len(jobs), None, 0, 0
 
     # --- free distance filter (hard limit, same rule as the website) ---
     if p.get("home"):
@@ -314,6 +317,7 @@ def main() -> int:
             if hidden_dream:
                 print(f"  {hidden_dream} of them are at your dream companies.")
             jobs = kept
+            hidden_far = len(dropped)
             if not jobs:
                 sys.exit("No jobs are left inside your distance limit.")
 
@@ -417,6 +421,29 @@ def main() -> int:
             w.writeheader()
             w.writerows(scored)
         print(f"\nSaved {len(scored)} scored jobs to {args.out}")
+
+    if args.json and scored:
+        def miles_to(j):
+            """Distance from home, rounded to the nearest 5 miles so the exact home can't be worked out."""
+            try:
+                return int(round(miles_between(home, float(j["lat"]), float(j["lon"])) / 5) * 5)
+            except (TypeError, ValueError, KeyError):
+                return None
+
+        keep = ("score", "reason", "title", "company", "location", "url", "source", "posted", "salary")
+        payload = {
+            "generated": datetime.now().isoformat(timespec="minutes"),
+            # home address, salary and current title are deliberately NOT published
+            "profile": {k: v for k, v in p.items() if k not in ("home", "salary", "currentTitle")},
+            "stats": {"in_csv": total_jobs, "hidden_by_distance": hidden_far,
+                      "hidden_dream_company": hidden_dream, "sent_to_claude": len(candidates),
+                      "scored": len(scored), "model": MODEL},
+            "jobs": [{**{k: j.get(k, "") for k in keep},
+                      "remote": j.get("remote") == "True",
+                      "miles": miles_to(j) if home else None} for j in scored],
+        }
+        Path(args.json).write_text(json.dumps(payload, indent=1), encoding="utf-8")
+        print(f"Saved web results to {args.json}")
     return 0
 
 
