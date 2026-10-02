@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personalize your job search</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4f6f3; --surface: #fff; --ink: #17282b; --muted: #5a6b6e;
+    --line: #d3dcd8; --accent: #1b6b57; --accent-ink: #fff;
+    --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #101a1c; --surface: #16252a; --ink: #e6efec; --muted: #96a8a8; --line: #2a3d41; --accent: #5cc5a6; --accent-ink: #0b1a17; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 400 1rem/1.5 var(--body); }
+  .wrap { max-width: 44rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  h1 { font: 700 clamp(2rem, 6vw, 3rem)/1.05 var(--display); letter-spacing: -0.02em; margin: 0 0 0.5rem; }
+  .lead { color: var(--muted); margin: 0 0 2rem; }
+  fieldset { border: 0; border-top: 2px solid var(--ink); margin: 0 0 2rem; padding: 1rem 0 0; min-width: 0; }
+  legend { font: 700 1.25rem var(--display); padding: 0 0.5rem 0 0; }
+  .hint { color: var(--muted); font-size: 0.9rem; margin: 0 0 0.9rem; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem; }
+  .field label, .lbl { display: block; font-size: 0.88rem; color: var(--muted); margin-bottom: 0.2rem; }
+  input[type=text], input[type=number], input[type=month], select {
+    width: 100%; font: 400 0.95rem var(--body); padding: 0.6rem; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 4px;
+  }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  .choice { display: block; padding: 0.9rem; background: var(--surface); border: 2px solid var(--line); border-radius: 6px; cursor: pointer; }
+  .choice:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+  .choice input { position: absolute; opacity: 0; }
+  .choice:has(input:focus-visible) { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .choice b { display: block; font: 700 1.05rem var(--display); color: var(--ink); }
+  .choice span { font-size: 0.85rem; color: var(--muted); }
+
+  .checks { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+  .checks label { display: flex; gap: 0.4rem; align-items: center; color: var(--ink); font-size: 0.95rem; margin: 0; }
+  .checks input { accent-color: var(--accent); }
+  .sub { margin: 1rem 0 0; }
+
+  #rank { list-style: none; margin: 0; padding: 0; counter-reset: r; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+  #rank li { counter-increment: r; display: flex; align-items: center; gap: 0.75rem; padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--line); }
+  #rank li:last-child { border-bottom: 0; }
+  #rank li::before { content: counter(r); font: 700 1.1rem var(--display); width: 1.5rem; color: var(--accent); }
+  #rank span { flex: 1; font-weight: 500; }
+  #rank button { font: 600 0.9rem var(--body); width: 2.25rem; height: 2.25rem; background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; cursor: pointer; }
+  #rank button:hover { border-color: var(--accent); }
+
+  .go { font: 600 1.05rem var(--body); padding: 0.85rem 1.5rem; background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 4px; cursor: pointer; }
+  #result { margin-top: 2rem; padding: 1.25rem; background: var(--surface); border-left: 4px solid var(--accent); border-radius: 4px; }
+  #result h2 { font: 700 1.3rem var(--display); margin: 0 0 0.75rem; }
+  #result dl { margin: 0 0 1rem; display: grid; grid-template-columns: max-content 1fr; gap: 0.25rem 1rem; }
+  #result dt { color: var(--muted); }
+  #result dd { margin: 0; }
+  #result a { color: var(--accent); font-weight: 600; }
+  @media (max-width: 40rem) { .grid, .stages { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Personalize your job search</h1>
+  <p class="lead">Answer what you can. Skip anything that doesn't apply.</p>
+
+  <form id="f">
+    <fieldset>
+      <legend>Where are you right now?</legend>
+      <div class="stages" role="radiogroup">
+        <label class="choice"><input type="radio" name="stage" value="student" required><b>Student</b><span>Undergraduate</span></label>
+        <label class="choice"><input type="radio" name="stage" value="grad"><b>Grad student</b><span>Master's, MBA, PhD, or professional</span></label>
+        <label class="choice"><input type="radio" name="stage" value="work"><b>Working professional</b><span>Currently in the workforce</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset id="s-student" hidden disabled>
+      <legend>About your studies</legend>
+      <div class="grid">
+        <div class="field"><label for="year">Year in school</label>
+          <select id="year" name="year"><option value="">Choose one</option><option>First year</option><option>Sophomore</option><option>Junior</option><option>Senior</option></select></div>
+        <div class="field"><label for="major">Major</label><input id="major" name="major" type="text" placeholder="e.g. Business management"></div>
+        <div class="field"><label for="grad1">Expected graduation</label><input id="grad1" name="gradDate" type="month"></div>
+        <div class="field"><label for="seek1">Looking for</label>
+          <select id="seek1" name="seeking"><option value="">Choose one</option><option>Internship</option><option>Part-time job while in school</option><option>Entry-level job after graduating</option></select></div>
+      </div>
+    </fieldset>
+
+    <fieldset id="s-grad" hidden disabled>
+      <legend>About your program</legend>
+      <div class="grid">
+        <div class="field"><label for="degree">Degree</label>
+          <select id="degree" name="degree"><option value="">Choose one</option><option>Master's</option><option>MBA</option><option>PhD</option><option>Professional (law, medicine, etc.)</option></select></div>
+        <div class="field"><label for="field">Field of study</label><input id="field" name="field" type="text" placeholder="e.g. Data science"></div>
+        <div class="field"><label for="grad2">Expected graduation</label><input id="grad2" name="gradDate" type="month"></div>
+        <div class="field"><label for="seek2">Looking for</label>
+          <select id="seek2" name="seeking"><option value="">Choose one</option><option>Internship</option><option>Co-op or fellowship</option><option>Research position</option><option>Full-time job after graduating</option></select></div>
+      </div>
+    </fieldset>
+
+    <fieldset id="s-work" hidden disabled>
+      <legend>About your career</legend>
+      <div class="grid">
+        <div class="field"><label for="title">Current job title</label><input id="title" name="currentTitle" type="text"></div>
+        <div class="field"><label for="exp">Years of experience</label>
+          <select id="exp" name="experience"><option value="">Choose one</option><option>Less than 2</option><option>2 to 5</option><option>5 to 10</option><option>10 to 15</option><option>15 or more</option></select></div>
+        <div class="field"><label for="ind">Industry</label>
+          <select id="ind" name="industry"><option value="">Choose one</option><option>Technology</option><option>Business and finance</option><option>Healthcare</option><option>Education</option><option>Media and entertainment</option><option>Retail and hospitality</option><option>Manufacturing</option><option>Government and nonprofit</option><option>Other</option></select></div>
+        <div class="field"><label for="seek3">Looking for</label>
+          <select id="seek3" name="seeking"><option value="">Choose one</option><option>A similar role</option><option>A step up in level</option><option>A change of career</option></select></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>What kind of job?</legend>
+      <p class="lbl">Job type</p>
+      <div class="checks">
+        <label><input type="checkbox" name="types" value="Full-time"> Full-time</label>
+        <label><input type="checkbox" name="types" value="Part-time"> Part-time</label>
+        <label><input type="checkbox" name="types" value="Internship"> Internship</label>
+        <label><input type="checkbox" name="types" value="Contract"> Contract</label>
+        <label><input type="checkbox" name="types" value="Temporary"> Temporary</label>
+      </div>
+      <p class="lbl sub">Work arrangement</p>
+      <div class="checks">
+        <label><input type="checkbox" name="arr" value="On-site"> On-site</label>
+        <label><input type="checkbox" name="arr" value="Hybrid"> Hybrid</label>
+        <label><input type="checkbox" name="arr" value="Remote"> Remote</label>
+      </div>
+      <div class="grid sub">
+        <div class="field"><label for="roles">Roles you want (comma separated)</label><input id="roles" name="roles" type="text" placeholder="e.g. branch manager, analyst"></div>
+        <div class="field"><label for="dream">Dream companies</label><input id="dream" name="dream" type="text" placeholder="e.g. Netflix"></div>
+        <div class="field"><label for="home">Home city or ZIP code</label><input id="home" name="home" type="text"></div>
+        <div class="field"><label for="miles">Max distance from home: <output id="milesOut">50</output> miles</label><input id="miles" name="miles" type="range" min="5" max="200" step="5" value="50"></div>
+        <div class="field"><label for="salary">Minimum salary (USD per year)</label><input id="salary" name="salary" type="number" min="0" step="1000" placeholder="e.g. 60000"></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>What matters most?</legend>
+      <p class="hint">Put the most important thing first. Use the arrows to reorder.</p>
+      <ol id="rank">
+        <li data-key="location"><span>Location</span><button type="button" data-dir="-1" aria-label="Move up">▲</button><button type="button" data-dir="1" aria-label="Move down">▼</button></li>
+        <li data-key="salary"><span>Salary</span><button type="button" data-dir="-1" aria-label="Move up">▲</button><button type="button" data-dir="1" aria-label="Move down">▼</button></li>
+        <li data-key="experience"><span>Fits my experience level</span><button type="button" data-dir="-1" aria-label="Move up">▲</button><button type="button" data-dir="1" aria-label="Move down">▼</button></li>
+        <li data-key="jobtype"><span>Type of job</span><button type="button" data-dir="-1" aria-label="Move up">▲</button><button type="button" data-dir="1" aria-label="Move down">▼</button></li>
+        <li data-key="company"><span>Company I want to work for</span><button type="button" data-dir="-1" aria-label="Move up">▲</button><button type="button" data-dir="1" aria-label="Move down">▼</button></li>
+        <li data-key="growth"><span>Room to grow</span><button type="button" data-dir="-1" aria-label="Move up">▲</button><button type="button" data-dir="1" aria-label="Move down">▼</button></li>
+      </ol>
+    </fieldset>
+
+    <button class="go" type="submit">Save my priorities</button>
+  </form>
+
+  <section id="result" hidden aria-live="polite"></section>
+</main>
+
+<script>
+(function () {
+  var f = document.getElementById("f"), rank = document.getElementById("rank"), result = document.getElementById("result");
+  var sections = { student: document.getElementById("s-student"), grad: document.getElementById("s-grad"), work: document.getElementById("s-work") };
+
+  // Show only the questions for the chosen stage (disabled fieldsets are skipped on submit)
+  f.addEventListener("change", function (e) {
+    if (e.target.name === "stage") {
+      Object.keys(sections).forEach(function (k) {
+        sections[k].hidden = k !== e.target.value;
+        sections[k].disabled = k !== e.target.value;
+      });
+    }
+  });
+  document.getElementById("miles").addEventListener("input", function (e) {
+    document.getElementById("milesOut").textContent = e.target.value;
+  });
+
+  // Reorder the priority list with the arrow buttons
+  rank.addEventListener("click", function (e) {
+    var btn = e.target.closest("button");
+    if (!btn) return;
+    var li = btn.closest("li"), dir = +btn.dataset.dir;
+    if (dir < 0 && li.previousElementSibling) rank.insertBefore(li, li.previousElementSibling);
+    if (dir > 0 && li.nextElementSibling) rank.insertBefore(li.nextElementSibling, li);
+    btn.focus();
+  });
+
+  function row(dl, k, v) {
+    if (!v || (Array.isArray(v) && !v.length)) return;
+    var dt = document.createElement("dt"), dd = document.createElement("dd");
+    dt.textContent = k; dd.textContent = Array.isArray(v) ? v.join(", ") : v;
+    dl.appendChild(dt); dl.appendChild(dd);
+  }
+
+  f.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var d = new FormData(f), p = {};
+    d.forEach(function (v, k) { if (k !== "types" && k !== "arr" && v !== "") p[k] = v; });
+    p.types = d.getAll("types");
+    p.arrangement = d.getAll("arr");
+    p.priorities = Array.from(rank.children).map(function (li) { return li.dataset.key; });
+    var labels = Array.from(rank.children).map(function (li) { return li.querySelector("span").textContent; });
+
+    // Saved in this browser; the job board page reads "prefs" for roles, company, distance and remote
+    try {
+      localStorage.setItem("profile", JSON.stringify(p));
+      localStorage.setItem("prefs", JSON.stringify({
+        roles: p.roles || "", dream: p.dream || "", home: p.home || "",
+        miles: +p.miles || 50, remote: p.arrangement.indexOf("Remote") > -1
+      }));
+    } catch (err) {}
+
+    result.replaceChildren();
+    var h = document.createElement("h2"); h.textContent = "Your priorities are saved"; result.appendChild(h);
+    var dl = document.createElement("dl");
+    row(dl, "Stage", { student: "Student", grad: "Grad student", work: "Working professional" }[p.stage]);
+    row(dl, "Looking for", p.seeking);
+    row(dl, "Job types", p.types);
+    row(dl, "Arrangement", p.arrangement);
+    row(dl, "Roles", p.roles);
+    row(dl, "Dream companies", p.dream);
+    row(dl, "Home", p.home && p.home + " (within " + p.miles + " miles)");
+    row(dl, "Minimum salary", p.salary && "$" + Number(p.salary).toLocaleString());
+    row(dl, "Most important", labels.slice(0, 3));
+    result.appendChild(dl);
+    var a = document.createElement("a"); a.href = "job-recommendations.html"; a.textContent = "See matching jobs";
+    result.appendChild(a);
+    result.hidden = false;
+    result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+})();
+</script>
+</body>
+</html>
