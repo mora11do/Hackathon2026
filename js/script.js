@@ -35,3 +35,20 @@ resumeUpload.addEventListener("change", async function () {
     }
 });
 
+
+<script>
+  document.querySelectorAll("a.service").forEach(function (card) {
+    card.addEventListener("click", function (e) {
+      // let ctrl/cmd/shift-click (open in new tab) behave normally
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      // skip the animation for people who prefer reduced motion
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      e.preventDefault();
+      card.classList.add("selected");
+      setTimeout(function () {
+        window.location.href = card.href;
+      }, 300);
+    });
+  });
+</script>
