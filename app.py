@@ -3,7 +3,7 @@ from flask_cors import CORS
 from extract_resume import extract_text
 
 app = Flask(__name__)
-CORS(app, origins=["https://mora11do.github.io"])
+CORS(app)
 
 
 
