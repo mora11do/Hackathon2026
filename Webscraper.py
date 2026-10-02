@@ -27,6 +27,7 @@ from dataclasses import asdict, dataclass, fields
 from datetime import datetime, timezone
 from typing import Iterator
 from urllib.parse import quote_plus, urljoin, urlparse
+from math import asin, cos, radians, sin, sqrt
 
 import requests
 from bs4 import BeautifulSoup
@@ -312,6 +313,54 @@ class ConfigurableHTML:
 # Runner
 # --------------------------------------------------------------------------- #
 BUILTIN = {"remoteok": RemoteOK, "remotive": Remotive}
+EARTH_RADIUS_MILES = 3958.8
+
+
+def distance_miles(lat1, lon1, lat2, lon2):
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    a = (sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2)
+
+    return 2 * EARTH_RADIUS_MILES * asin(sqrt(a))
+
+
+def lookup_location(place, fetcher):
+    url = (
+        "https://geocoding-api.open-meteo.com/v1/search"
+        f"?count=1&language=en&format=json&name={quote_plus(place)}"
+    )
+
+    data = fetcher.get(url).json()
+    results = data.get("results", [])
+
+    if not results:
+        return None
+
+    result = results[0]
+    return result["latitude"], result["longitude"]
+
+def filter_by_radius(jobs, origin, radius_miles, include_remote=True):
+    origin_lat, origin_lon = origin
+    matching_jobs = []
+
+    for job in jobs:
+        if job.remote:
+            if include_remote:
+                matching_jobs.append(job)
+            continue
+
+        if job.lat is None or job.lon is None:
+            continue
+
+        distance = distance_miles(origin_lat,origin_lon,job.lat,job.lon)
+
+        if distance <= radius_miles:
+            matching_jobs.append(job)
+
+    return matching_jobs
 
 
 def write_output(jobs: list[Job], path: str) -> None:
@@ -338,7 +387,11 @@ def main() -> int:
     ap.add_argument("--geocode", action="store_true", help="add lat/lon/remote so the site can filter by distance")
     ap.add_argument("--out", default="jobs.csv", help="output .csv or .json")
     ap.add_argument("-v", "--verbose", action="store_true")
+    ap.add_argument("--location", help="your location, such as 'Provo, Utah'")
+    ap.add_argument("--radius-miles",type=float,default=25,help="maximum distance for local jobs")
+    ap.add_argument("--exclude-remote",action="store_true",help="exclude remote jobs from the results")
     args = ap.parse_args()
+
 
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(levelname)s %(message)s")
 
@@ -368,9 +421,19 @@ def main() -> int:
         except Exception as exc:  # keep going if one source breaks
             log.error("FAILED %s: %s", adapter.name, exc)
 
-    if args.geocode:
-        from geocode import enrich
-        enrich(results, fetcher)
+    if args.geocode or args.location:
+    from geocode import enrich
+    enrich(results, fetcher)
+
+    if args.location:
+    origin = lookup_location(args.location, fetcher)
+
+    if origin is None:
+        ap.error(f"Could not find location: {args.location}")
+
+    results = filter_by_radius(results,origin,args.radius_miles,include_remote=not args.exclude_remote)
+
+    log.info("kept %d jobs within %.1f miles of %s",len(results),args.radius_miles,args.location)
 
     write_output(results, args.out)
     log.info("wrote %d jobs to %s", len(results), args.out)
