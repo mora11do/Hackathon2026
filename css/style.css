@@ -113,8 +113,8 @@
     }
 
     /* ===== UPLOAD ===== */
-    #resume-upload {
-        display: none;
+    input#resume-upload {
+        display: none !important;
     }
 
     /* ===== SERVICES ===== */
