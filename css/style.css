@@ -19,20 +19,21 @@
     }
 
     /* ===== HEADER ===== */
-    header {
-        background: #222;
-        color: white;
-        padding: 20px 50px;
-        
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        postion: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 1000;
-    }
+header {
+    background: #222;
+    color: white;
+    padding: 20px 50px;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    postion: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
 
     .logo {
       font-size: 24px;
