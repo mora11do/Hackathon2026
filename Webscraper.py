@@ -374,6 +374,69 @@ def write_output(jobs: list[Job], path: str) -> None:
             w.writeheader()
             w.writerows(rows)
 
+from dataclasses import asdict
+
+
+def search_jobs(
+    query,
+    location=None,
+    radius_miles=25,
+    sources=("remoteok", "remotive"),
+    limit=50,
+    delay=2.0,
+    exclude_remote=False,
+):
+    fetcher = PoliteFetcher(delay=delay)
+
+    adapters = []
+
+    for source_name in sources:
+        adapter_class = BUILTIN[source_name]
+        adapters.append(adapter_class())
+
+    results = []
+
+    for adapter in adapters:
+        results.extend(
+            adapter.fetch(fetcher, query, limit)
+        )
+
+    # Remove duplicates
+    unique_jobs = []
+    seen = set()
+
+    for job in results:
+        key = (
+            job.url
+            or f"{job.company}|{job.title}|{job.location}"
+        )
+
+        if key not in seen:
+            seen.add(key)
+            unique_jobs.append(job)
+
+    results = unique_jobs[:limit]
+
+    # Apply location filtering
+    if location:
+        from geocode import enrich
+
+        enrich(results, fetcher)
+
+        origin = lookup_location(location, fetcher)
+
+        if origin is None:
+            raise ValueError(f"Could not find location: {location}")
+
+        results = filter_by_radius(
+            results,
+            origin,
+            radius_miles,
+            include_remote=not exclude_remote,
+        )
+
+    return [asdict(job) for job in results]
+
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Polite job listing scraper")
