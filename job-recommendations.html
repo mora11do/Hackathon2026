@@ -225,7 +225,7 @@
     row(dl, "Minimum salary", p.salary && "$" + Number(p.salary).toLocaleString());
     row(dl, "Most important", labels.slice(0, 3));
     result.appendChild(dl);
-    var a = document.createElement("a"); a.href = "job-recommendations.html"; a.textContent = "See matching jobs";
+    var a = document.createElement("a"); a.href = "matching-jobs.html"; a.textContent = "See matching jobs";
     result.appendChild(a);
     result.hidden = false;
     result.scrollIntoView({ behavior: "smooth", block: "nearest" });
