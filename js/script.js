@@ -1,3 +1,5 @@
+console.log("SCRIPT.JS LOADED");
+
 const resumeUpload = document.getElementById("resume-upload");
 
 resumeUpload.addEventListener("change", async function () {
