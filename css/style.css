@@ -112,6 +112,11 @@
       margin: auto;
     }
 
+    /* ===== UPLOAD ===== */
+    .resume-upload {
+        display: none;
+    }
+
     /* ===== SERVICES ===== */
     .services {
       background: #f4f4f4;
