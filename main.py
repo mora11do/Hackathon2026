@@ -1,5 +1,5 @@
-from extract_resume import extract_text()
-from Webscraper import enrich()
+from extract_resume import extract_resume
+from Webscraper import scrape_jobs
 from geocode import add_coordinates
 
 
