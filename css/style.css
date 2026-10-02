@@ -175,7 +175,7 @@ a.service.selected {
     }
 
     /* ===== FOOTER ===== */
-    footer {
+    .footer {
         text-align: center;
         padding-bottom: 2%;
         background-color: rgb(236, 205, 225);
