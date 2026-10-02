@@ -12,11 +12,6 @@ def home():
     return "Flask backend is running!"
 
 
-@app.route("/")
-def home():
-    return "Flask backend is running!"
-
-
 @app.route("/upload", methods=["POST"])
 def upload_resume():
 
