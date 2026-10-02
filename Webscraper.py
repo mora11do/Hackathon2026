@@ -422,15 +422,13 @@ def main() -> int:
             log.error("FAILED %s: %s", adapter.name, exc)
 
     if args.geocode or args.location:
-    from geocode import enrich
-    enrich(results, fetcher)
+      from geocode import enrich
+      enrich(results, fetcher)
 
     if args.location:
-    origin = lookup_location(args.location, fetcher)
-
-    if origin is None:
-        ap.error(f"Could not find location: {args.location}")
-
+      origin = lookup_location(args.location, fetcher)
+      if origin is None:
+          ap.error(f"Could not find location: {args.location}")
     results = filter_by_radius(results,origin,args.radius_miles,include_remote=not args.exclude_remote)
 
     log.info("kept %d jobs within %.1f miles of %s",len(results),args.radius_miles,args.location)
