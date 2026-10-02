@@ -13,7 +13,7 @@ Every request (APIs and HTML pages alike) goes through PoliteFetcher, which:
   * fetches and caches robots.txt per host and refuses disallowed URLs
   * honours Crawl-delay and enforces a minimum delay per host
   * backs off on 429/503 (honouring Retry-After)
-  * identifies itself with a real User-Agent 
+  * identifies itself with a real User-Agent (edit USER_AGENT below!)
 """
 from __future__ import annotations
 
@@ -50,6 +50,9 @@ class Job:
     posted: str = ""
     salary: str = ""
     description: str = ""
+    lat: float | None = None
+    lon: float | None = None
+    remote: bool = False
 
 
 class Blocked(Exception):
@@ -332,6 +335,7 @@ def main() -> int:
     ap.add_argument("--html-config", nargs="*", default=[], metavar="JSON", help="HTML site config files")
     ap.add_argument("--limit", type=int, default=50, help="max jobs per source")
     ap.add_argument("--delay", type=float, default=2.0, help="min seconds between requests per host")
+    ap.add_argument("--geocode", action="store_true", help="add lat/lon/remote so the site can filter by distance")
     ap.add_argument("--out", default="jobs.csv", help="output .csv or .json")
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args()
@@ -363,6 +367,10 @@ def main() -> int:
             log.error("SKIPPED %s: %s", adapter.name, exc)
         except Exception as exc:  # keep going if one source breaks
             log.error("FAILED %s: %s", adapter.name, exc)
+
+    if args.geocode:
+        from geocode import enrich
+        enrich(results, fetcher)
 
     write_output(results, args.out)
     log.info("wrote %d jobs to %s", len(results), args.out)
