@@ -16,6 +16,32 @@
       text-decoration: none;
       color: inherit;
     }
+    
+    a.service {
+  display: block;
+  position: relative;          /* lets z-index work so the grown card sits on top */
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* grows on hover, and when tabbed to with the keyboard */
+a.service:hover,
+a.service:focus-visible {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  z-index: 1;
+}
+
+/* the extra-large "selected" state right before navigating */
+a.service.selected {
+  transform: scale(1.12);
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a.service { transition: none; }
+}
 
     /* ===== HEADER ===== */
     header {
