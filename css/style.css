@@ -176,10 +176,17 @@ a.service.selected {
 
     /* ===== FOOTER ===== */
     footer {
-      background: #222;
-      color: white;
-      text-align: center;
-      padding: 25px;
+        text-align: center;
+        padding-bottom: 2%;
+        background-color: rgb(236, 205, 225);
+        font-size: medium;
+        font-style: italic;
+        font-family: Arial, Helvetica, sans-serif;
+        color: black;
+        border: dashed rgb(239, 119, 197);
+        position: fixed;
+        width: 98.68%;
+        bottom: 0px;
     }
 
     /* ===== MOBILE ===== */
