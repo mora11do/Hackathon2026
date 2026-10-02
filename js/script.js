@@ -30,7 +30,7 @@ resumeUpload.addEventListener("change", async function () {
         }
 
     } catch (error) {
-        console.error(error);
+        console.error(error.message);
         alert("Something went wrong uploading your resume.");
     }
 });
