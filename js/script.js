@@ -11,7 +11,7 @@ resumeUpload.addEventListener("change", async function () {
     formData.append("resume", file);
 
     try {
-        const response = await fetch("/upload", {
+        const response = await fetch("https://urban-lamp-5gv7xg45pr47fvq6v-5001.app.github.dev/upload", {
             method: "POST",
             body: formData
         });
