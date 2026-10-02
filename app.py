@@ -1,7 +1,5 @@
 from flask import Flask, request, jsonify
 from extract_resume import extract_text
-from Webscraper import enrich
-from geocode import add_coordinates
 
 app = Flask(__name__)
 
@@ -9,38 +7,32 @@ app = Flask(__name__)
 @app.route("/upload", methods=["POST"])
 def upload_resume():
 
+    # Make sure a file was actually uploaded
+    if "resume" not in request.files:
+        return jsonify({"error": "No resume uploaded"}), 400
+
     resume = request.files["resume"]
 
+    # Make sure the user selected a file
+    if resume.filename == "":
+        return jsonify({"error": "No file selected"}), 400
+
     # Save the uploaded PDF temporarily
-    resume.save("resume.pdf")
+    resume.save("uploaded_resume.pdf")
 
-    # Your team's existing processing
-    applicant = extract_text("resume.pdf")
+    try:
+        # Extract the text from the PDF
+        resume_text = extract_text("uploaded_resume.pdf")
 
-    jobs = enrich(
-        keywords=applicant["skills"],
-        location=applicant["location"]
-    )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
-    jobs = add_coordinates(jobs)
-
-    matches = []
-
-    for job in jobs:
-        matching_skills = set(applicant["skills"]) & set(job["skills"])
-
-        if len(matching_skills) >= 2:
-            job["match_score"] = len(matching_skills)
-            matches.append(job)
-
-    matches.sort(
-        key=lambda job: job["match_score"],
-        reverse=True
-    )
-
-    return jsonify(matches)
+    # Send the extracted resume text back for now
+    return jsonify({
+        "message": "Resume received successfully!",
+        "resume_text": resume_text
+    })
 
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
-
